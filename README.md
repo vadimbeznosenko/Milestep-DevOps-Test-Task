@@ -1,4 +1,6 @@
-1)качаем и он просто всё готово
+1)
+
+качаем и он просто всё готово
 
 wget https://repo1.maven.org/maven2/io/lavagna/lavagna/1.1.9/lavagna-1.1.9-distribution.zip
 
@@ -13,7 +15,7 @@ unzip lavagna-1.1.9-distribution.zip
 
 2)
 
-одновляем зависимости 
+обновляем зависимости 
 
 sudo apt-get update
 
@@ -66,7 +68,9 @@ mvn clean install
 java -jar lavagna-jetty-console.war
 
 
-3) докер файл мульти стейдж билд
+3) 
+
+докер файл мульти стейдж билд
 
 FROM ubuntu:latest as build
 
