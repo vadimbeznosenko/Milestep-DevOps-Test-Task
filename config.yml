@@ -1,0 +1,111 @@
+
+- name: Преконфиг серверов Docker
+
+  hosts: docker_all
+  tasks:
+
+    - name: Утановка Docker
+
+      block:
+
+        - name: Добавляем universe
+          apt_repository:
+            repo: "deb http://us.archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} universe"
+            state: present
+
+        - name: Установка дополнительных пакетов
+
+          apt:
+            name:
+              - apt-transport-https
+              - ca-certificates
+              - gnupg
+              - lsb-release
+              - software-properties-common
+              - wget
+              - libasound2
+              - python3-docker
+              - pip
+            update-cache: yes
+            cache_valid_time: 86400
+
+        - name: Добавление ключа Docker
+          apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            state: present
+
+        - name: Установка стабильного репозитория
+          shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+        - name: Установка Docker
+          apt:
+            name: 
+              - docker-ce
+              - docker-ce-cli
+              - containerd.io
+            update-cache: yes
+
+        - name: Проверка что Docker установлен и перезагружен
+          service:
+            name: docker
+            state: restarted
+            enabled: yes
+      become: yes
+
+    - name: Утановка Docker-compose
+
+      block:
+
+        - name: Получение последней версии Docker-compose
+          uri:
+            url: https://api.github.com/repos/docker/compose/releases/latest
+            body_format: json
+          register: page
+
+        - name: Установка Docker-compose
+          get_url:
+            url: "https://github.com/docker/compose/releases/download/{{ page.json.tag_name }}/docker-compose-Linux-x86_64"
+            dest: /usr/local/bin/docker-compose
+            mode: 0755
+      become: yes
+
+    - name: Добавление пользователя в группу
+
+      block:
+
+        - name: Добавление пользователя в группу Docker
+          ansible.builtin.user:
+            name: vagrant
+            groups: docker
+            append: yes
+
+        - name: Обновление Docker через pip для Swarm
+          pip: 
+            name: docker
+            state: latest
+
+        - name: Перезагрузка
+          reboot:
+      become: yes
+
+    - name: CI\CD на коленках
+
+      block:
+
+       - name: копирование docker-compose.yml
+         ansible.builtin.copy:
+            src: ./docker-compose.yml
+            dest: /home/vagrant/
+            owner: vagrant
+            group: vagrant
+            mode: '0644'
+
+       - name: копирование docker-compose.yml
+         ansible.builtin.copy:
+            src: ./Dockerfile
+            dest: /home/vagrant/
+            owner: vagrant
+            group: vagrant
+            mode: '0644'
+       - name: docker-compose up
+         command: docker-compose up -d 
