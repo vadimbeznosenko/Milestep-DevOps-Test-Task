@@ -3,7 +3,7 @@ RUN apt update
 RUN apt -y install \
     maven wget unzip openjdk-8-jdk
 WORKDIR /usr/src/app/
-RUN wget "https://github.com/vadimbeznosenko/lavagna/archive/refs/heads/master.zip" -O lavagna.zip && \
+RUN wget "https://github.com/vadimbeznosenko/lavagna/archive/refs/heads/main.zip" -O lavagna.zip && \
     unzip ./lavagna.zip && \
     rm -rf ./lavagna.zip
 WORKDIR /usr/src/app/lavagna-master/
