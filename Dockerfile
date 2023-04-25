@@ -7,7 +7,7 @@ RUN wget "https://github.com/vadimbeznosenko/lavagna/archive/refs/heads/main.zip
     unzip ./lavagna.zip && \
     rm -rf ./lavagna.zip
 WORKDIR /usr/src/app/lavagna-master/
-RUN export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && export PATH=$PATH:$JAVA_HOME/bin && npm install && mvn clean install
+RUN export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && export PATH=$PATH:$JAVA_HOME/bin && mvn clean install
 
 FROM openjdk:8-jre-alpine
 WORKDIR /usr/src/app/
